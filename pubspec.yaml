@@ -21,35 +21,179 @@ version: 1.0.0+1
 environment:
   sdk: ^3.9.0
 
-# Dependencies specify other packages that your package needs in order to work.
-# To automatically upgrade your package dependencies to the latest versions
-# consider running `flutter pub upgrade --major-versions`. Alternatively,
-# dependencies can be manually updated by changing the version numbers below to
-# the latest version available on pub.dev. To see which dependencies have newer
-# versions available, run `flutter pub outdated`.
 dependencies:
+
+  # ------------------------------------------------
+  # CORE FLUTTER
+  # ------------------------------------------------
   flutter:
     sdk: flutter
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
+
+  # ------------------------------------------------
+  # NETWORKING / API
+  # ------------------------------------------------
+  http: ^1.5.0
+
+
+  # ------------------------------------------------
+  # STATE MANAGEMENT / DI
+  # ------------------------------------------------
+  provider: ^6.1.5+1
+  get_it: ^8.2.0
+
+
+  # ------------------------------------------------
+  # NAVIGATION
+  # ------------------------------------------------
+  go_router: ^16.3.0
+
+
+  # ------------------------------------------------
+  # FIREBASE
+  # ------------------------------------------------
+  firebase_core: ^4.2.0
+  firebase_messaging: ^16.0.3
+
+
+  # ------------------------------------------------
+  # STORAGE / PERSISTENCE
+  # ------------------------------------------------
+  shared_preferences: ^2.5.3
+  flutter_secure_storage: ^9.2.4
+  path_provider: ^2.1.5
+
+
+  # ------------------------------------------------
+  # DEVICE FEATURES / PERMISSIONS
+  # ------------------------------------------------
+  connectivity_plus: ^7.0.0
+  permission_handler: ^12.0.1
+  local_auth: ^3.0.0
+  device_info_plus: ^12.4.0
+  # Único propósito: ANDROID_ID real (Settings.Secure.ANDROID_ID) - device_info_plus
+  # dejó de exponerlo desde su versión 4.1.0 (ver DeviceStableIdService). Sin
+  # soporte iOS - ese lado sigue sin resolver a propósito (ver la misma clase).
+  android_id: ^0.5.2+1
+
+
+  # ------------------------------------------------
+  # LOCATION
+  # ------------------------------------------------
+  geolocator: ^12.0.0
+  geocoding: ^3.0.0
+
+
+  # ------------------------------------------------
+  # LOCAL NOTIFICATIONS / TIME
+  # ------------------------------------------------
+  flutter_local_notifications: ^19.5.0
+  timezone: ^0.10.1
+
+
+  # ------------------------------------------------
+  # MEDIA / FILES / IMAGES
+  # ------------------------------------------------
+  image_picker: ^1.2.0
+  image: ^4.5.4
+  flutter_svg: ^2.2.1
+
+
+  # ------------------------------------------------
+  # UI / ANIMATIONS
+  # ------------------------------------------------
+  auto_size_text: ^3.0.0
+  flutter_animate: ^4.5.2
+  lottie: ^3.3.2
+  flutter_speed_dial: ^7.0.0
+
+
+  # ------------------------------------------------
+  # FONTS / ICONS
+  # ------------------------------------------------
+  google_sign_in: ^6.2.2
+  font_awesome_flutter: ^10.7.0
+
+
+  # ------------------------------------------------
+  # LOCALIZATION / INTERNATIONALIZATION
+  # ------------------------------------------------
+  slang: ^4.9.0
+  slang_flutter: ^4.9.0
+  flutter_localization: ^0.3.3
+  intl: ^0.20.2
+
+
+  # ------------------------------------------------
+  # USER EXPERIENCE
+  # ------------------------------------------------
+  fluttertoast: ^9.0.0
+  tutorial_coach_mark: ^1.3.3
+
+
+  # ------------------------------------------------
+  # UTILITIES
+  # ------------------------------------------------
+  uuid: ^4.5.1
+  flutter_dotenv: ^6.0.0
+  package_info_plus: ^8.3.0
+
+
+  # ------------------------------------------------
+  # CODE GENERATION / MODELS
+  # ------------------------------------------------
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.9.0
+
+
+  # ------------------------------------------------
+  # DEVELOPMENT TOOLS
+  # ------------------------------------------------
+
+
+  # ------------------------------------------------
+  # APP CONFIGURATION
+  # ------------------------------------------------
+  flutter_native_splash: ^2.4.7
+  flutter_launcher_icons: ^0.14.4
+
+  logger: ^2.4.0
+  flutter_map: ^8.3.1
+  latlong2: ^0.10.1
+  url_launcher: ^6.3.2
+  google_maps_flutter: ^2.14.2
+
+
+  # ------------------------------------------------
+  # BASE DE DATOS LOCAL (cola de posiciones offline)
+  # ------------------------------------------------
+  # Versiones fijas (no ^): drift_dev >=2.22.0 exige build >=3.0.0, incompatible
+  # con freezed 2.x (build ^2.3.1) — 2.21.0 es la última línea compatible con
+  # el resto del proyecto sin migrar freezed a 3.x.
+  drift: 2.21.0
+  drift_flutter: 0.2.4
+  flutter_foreground_task: ^9.2.2
+
 dev_dependencies:
+
   flutter_test:
     sdk: flutter
 
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
+  # Ya resuelta como transitiva de flutter_secure_storage (ver pubspec.lock) -
+  # se declara explícita únicamente para poder importar el fake en memoria
+  # que ese mismo paquete expone para tests (TestFlutterSecureStoragePlatform,
+  # ver test/app/core/services/installation_id_service_test.dart). No agrega
+  # ninguna dependencia nueva al grafo, solo declara una ya presente.
+  flutter_secure_storage_platform_interface: ^1.1.2
+
   flutter_lints: ^5.0.0
 
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
-
-# The following section is specific to Flutter packages.
+  # Code generation
+  build_runner: ^2.4.9
+  freezed: ^2.5.2
+  json_serializable: ^6.8.0
+  drift_dev: 2.21.0
 flutter:
 
   # The following line ensures that the Material Icons font is

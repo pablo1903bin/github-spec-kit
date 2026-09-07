@@ -1,0 +1,22 @@
+{
+    "editor.codeActionsOnSave": {
+        "source.fixAll": "always",
+        "source.organizeImports": "always"
+    },
+    "workbench.editor.enablePreview": false,
+    "explorer.autoReveal": false,
+    "editor.linksNavigation": false,
+    "editor.hover.delay": 2000,
+    "command-runner.commands": {
+        "build abb": "flutter build appbundle --release",
+        "pub get": "dart pub get",
+        "build_runner": "dart run build_runner build",
+        "build_runner delete conflictos": "dart run build_runner build --delete-conflicting-outputs",
+        "flutter_gen_assets": "dart run flutter_gen:flutter_gen_command",
+        "slang-Internacionalizacion" : "dart run slang",
+        "deploy-vps-web":"bash deploy/deploy-vps.sh"
+    },
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "cmake.sourceDirectory": "C:/dev/fleetvision/linux"
+}

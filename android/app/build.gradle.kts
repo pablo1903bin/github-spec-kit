@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -13,10 +15,19 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        // flutter_local_notifications exige desugaring de la librería core de
+        // Java 8+ en Android — sin esto, assembleDebug falla con "requires
+        // core library desugaring to be enabled".
+        isCoreLibraryDesugaringEnabled = true
     }
 
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+    kotlin {
+        // El plugin de Kotlin 2.3.x removió el `kotlinOptions { jvmTarget = ... }`
+        // clásico (falla en tiempo de compilación del script) — migrado a la
+        // DSL nueva de `compilerOptions`.
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
+        }
     }
 
     defaultConfig {
@@ -41,4 +52,8 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }

@@ -20,7 +20,11 @@ pluginManagement {
 plugins {
     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
     id("com.android.application") version "8.9.1" apply false
-    id("org.jetbrains.kotlin.android") version "2.1.0" apply false
+    // google_maps_flutter_android / android-maps-utils arrastran
+    // kotlin-stdlib 2.3.10 transitivamente — con el plugin en 2.1.0,
+    // compileDebugKotlin fallaba ("Module was compiled with an incompatible
+    // version of Kotlin", metadata 2.3.0 vs. esperado 2.1.0).
+    id("org.jetbrains.kotlin.android") version "2.3.20" apply false
 }
 
 include(":app")

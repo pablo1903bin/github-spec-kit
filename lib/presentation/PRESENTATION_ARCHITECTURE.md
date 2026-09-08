@@ -60,9 +60,9 @@ presentation/
     └── nombre_modulo/
         ├── controllers/
         │     mapa_controller.dart
-        │
-        ├── state/
-        │     mapa_state.dart
+        │     │
+        │     └── state/
+        │           mapa_state.dart
         │
         ├── pages/
         │     mapa_view.dart
@@ -78,9 +78,11 @@ Cada carpeta admite un único tipo de contenido:
 | Carpeta | Contiene únicamente |
 |---|---|
 | `controllers/` | Controllers (`StateNotifier<TState>`) — ver §6 |
-| `state/` | Clases State con Freezed — ver §7 |
+| `controllers/state/` | Clases State con Freezed — ver §7 |
 | `pages/` | La(s) vista(s) principal(es) del módulo — ver §8 |
 | `widgets/` | Widgets propios del módulo — ver §9 |
+
+`state/` vive anidada dentro de `controllers/`, nunca como carpeta hermana: una clase State no existe sin el Controller que la administra (§6.2 — es su única fuente de verdad), así que la carpeta que la contiene refleja esa pertenencia en vez de sugerir que es un tipo de dato independiente y reutilizable por separado.
 
 Ningún archivo se coloca fuera de la carpeta que corresponde a su tipo, y ninguna carpeta contiene un tipo de clase distinto al que le corresponde.
 
@@ -92,9 +94,9 @@ presentation/
     └── nombre_modulo/
         ├── controllers/
         │     nombre_modulo_controller.dart
-        │
-        ├── state/
-        │     nombre_modulo_state.dart
+        │     │
+        │     └── state/
+        │           nombre_modulo_state.dart
         │
         ├── pages/
         │     nombre_modulo_view.dart
@@ -392,7 +394,7 @@ Este patrón no es una categoría arquitectónica nueva: sigue siendo un Control
 
 # 7. State
 
-La carpeta `state/` únicamente contiene clases State implementadas con Freezed. Ningún otro tipo de clase vive ahí.
+La carpeta `controllers/state/` únicamente contiene clases State implementadas con Freezed. Ningún otro tipo de clase vive ahí. Vive anidada dentro de `controllers/` (nunca como carpeta hermana, §4) porque solo un Controller administra una clase State — no es un tipo de dato independiente que otra capa del módulo pueda consumir por su cuenta.
 
 ## 7.1. Plantilla oficial
 
@@ -517,6 +519,14 @@ La porción de lógica descrita en §6.8 (instancia viva de un controlador de pl
 Un Widget se divide en Widgets más pequeños cuando exista una responsabilidad visual claramente identificable — la extracción debe representar un componente de UI completo, no únicamente reducir el número de líneas del archivo. No se crean Widgets que solo encapsulen dos o tres líneas sin aportar una responsabilidad visual propia.
 
 Cuando un Widget crece demasiado, su implementación puede dividirse en múltiples archivos dentro de `widgets/`. Estos archivos siguen formando parte del mismo Widget y no representan una nueva categoría arquitectónica; su única finalidad es mejorar la legibilidad. No contienen estado propio persistente, no representan lógica de negocio, no acceden a infraestructura y no se convierten en Controllers ni Services.
+
+### Un archivo, una clase
+
+Un archivo de `widgets/` contiene una única clase Widget — más, si hace falta, algún tipo de datos que solo esa clase consume (ej. `NavTab` junto a `AppBottomNavBar`, ver `navigation/widgets/`). Si al construir un Widget aparece una segunda responsabilidad visual con nombre propio (un ítem de lista, un resaltado, un separador), esa responsabilidad se extrae a su propio archivo dentro de `widgets/` — nunca se acumulan varias clases Widget en el mismo archivo, aunque sean privadas y pequeñas. El criterio del párrafo anterior sigue aplicando sin excepción: se extrae porque ya son dos componentes distintos conviviendo en el mismo archivo, no para bajar el conteo de líneas de uno solo.
+
+Consecuencia técnica de mover una clase privada (`_NombreWidget`) a su propio archivo: deja de poder ser privada, porque Dart resuelve `_` por archivo, no por carpeta ni por módulo. Al extraerla se renombra sin el guion bajo (`NombreWidget`) y se documenta con un comentario explícito de que sigue siendo un detalle interno de quien la usa, no un componente pensado para reutilizarse fuera de ahí — salvo que califique para la regla siguiente.
+
+**Antes de dejarla como pieza interna del módulo, se evalúa si en cambio debe subir a un widget global reutilizable** — mismo criterio de prioridad de §10.1. Si la pieza extraída no depende de ningún dato ni lógica específica del módulo (recibe todo por parámetros, igual que cualquier Widget del Design System), es candidata a vivir en `presentation/global/widgets/` en lugar de en `modules/nombre_modulo/widgets/`, para que cualquier otro módulo pueda reutilizarla sin duplicarla (§9.3/§10.2). Esa carpeta se crea recién cuando exista el primer candidato real que la necesite — no antes, mismo criterio de §2 (no generalizar por si acaso). Si en cambio depende de datos o de una decisión propia del módulo (como `NavTab`), se queda local — quedarse local es la opción por defecto; subir a global es la excepción que hay que justificar.
 
 ## 9.3. Reutilización antes que creación
 

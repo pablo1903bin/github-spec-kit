@@ -7,6 +7,7 @@ import 'package:spec_kit_flutter_lab/presentation/routes/go_route_helper.dart';
 import '../route_path.dart';
 
 class LoginRoutes {
+
   static GoRoute get login {
     return GoRouteHelper.goRoute<LoginController>(
       RoutePath.login,
@@ -14,4 +15,5 @@ class LoginRoutes {
       controller: () => LoginController(const LoginState()),
     );
   }
+  
 }

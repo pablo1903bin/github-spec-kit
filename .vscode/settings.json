@@ -4,7 +4,7 @@
         "source.organizeImports": "always"
     },
     "workbench.editor.enablePreview": false,
-    "explorer.autoReveal": false,
+    "explorer.autoReveal": true,
     "editor.linksNavigation": false,
     "editor.hover.delay": 2000,
     "command-runner.commands": {

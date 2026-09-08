@@ -6,9 +6,10 @@ class RoutePath {
 
   static const login = '/login';
   static const home = '/home';
+  static const profile = '/profile';
 
   /// Ruta con la que arranca la app. Hoy es [login] porque todavía no existe
   /// un flujo de splash/sesión — cuando se agregue, este alias es el único
   /// lugar a actualizar.
-  static const inicial = login;
+  static const inicial = home;
 }

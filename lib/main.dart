@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:spec_kit_flutter_lab/core/theme/app_colors.dart';
 import 'package:spec_kit_flutter_lab/presentation/global/i18n_provider.dart';
 import 'package:spec_kit_flutter_lab/presentation/routes/routes.dart';
 
@@ -22,7 +23,15 @@ class MyApp extends StatelessWidget with Routes {
       child: MaterialApp.router(
         title: 'spec_kit_flutter_lab',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple)),
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: AppColors.primary,
+            brightness: Brightness.dark,
+            surface: AppColors.surface,
+          ),
+          scaffoldBackgroundColor: AppColors.background,
+          useMaterial3: true,
+        ),
         routerConfig: router,
       ),
     );

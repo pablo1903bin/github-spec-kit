@@ -5,6 +5,7 @@ import 'package:spec_kit_flutter_lab/presentation/global/widgets/design/glass_co
 import 'package:spec_kit_flutter_lab/presentation/modules/home/controllers/home_controller.dart';
 import 'package:spec_kit_flutter_lab/presentation/modules/navigation/widgets/app_bottom_nav_bar_widget.dart';
 
+import '../widgets/home_background_widget.dart';
 import '../widgets/home_list_item_widget.dart';
 
 /// Vista principal del módulo home — ver PRESENTATION_ARCHITECTURE.md §8.
@@ -56,20 +57,28 @@ class HomeView extends StatelessWidget {
           child: const SizedBox.expand(),
         ),
       ),
-      body: ListView.builder(
-        // Top = alto del AppBar (el primer ítem arranca justo debajo, no
-        // tapado). Bottom = alto de la cápsula flotante del bottom nav (ver
-        // AppBottomNavBar.altura) — sin esto, el último ítem quedaría
-        // parcialmente tapado por ella en vez de poder scrollear por
-        // completo a la vista.
-        padding: EdgeInsets.fromLTRB(
-          0,
-          alturaAppBar + 12,
-          0,
-          12 + AppBottomNavBar.altura,
-        ),
-        itemCount: _cantidadDemo,
-        itemBuilder: (context, index) => HomeListItem(index: index),
+      body: Stack(
+        children: [
+          // Fondo fijo (no scrollea con la lista) — le da variación real de
+          // color al vidrio de arriba/abajo para que su transparencia se
+          // note (ver doc de HomeBackground).
+          const Positioned.fill(child: HomeBackground()),
+          ListView.builder(
+            // Top = alto del AppBar (el primer ítem arranca justo debajo,
+            // no tapado). Bottom = alto de la cápsula flotante del bottom
+            // nav (ver AppBottomNavBar.altura) — sin esto, el último ítem
+            // quedaría parcialmente tapado por ella en vez de poder
+            // scrollear por completo a la vista.
+            padding: EdgeInsets.fromLTRB(
+              0,
+              alturaAppBar + 12,
+              0,
+              12 + AppBottomNavBar.altura,
+            ),
+            itemCount: _cantidadDemo,
+            itemBuilder: (context, index) => HomeListItem(index: index),
+          ),
+        ],
       ),
     );
   }

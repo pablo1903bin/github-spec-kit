@@ -145,7 +145,14 @@ class AppBottomNavBar extends StatelessWidget {
                             label: tab.label,
                             selected: index == currentIndex,
                             color: AppColors.primary,
-                            unselectedColor: AppColors.textSecondary,
+                            // `textSecondary` es gris CLARO (pensado para
+                            // texto sobre fondo oscuro, ver AppColors) —
+                            // sobre el vidrio claro de esta barra casi no
+                            // se distinguía. `onLightSurfaceVariant` es el
+                            // gris oscuro que ya usamos para texto
+                            // secundario sobre superficies claras (mismo
+                            // criterio que HomeListItem).
+                            unselectedColor: AppColors.onLightSurfaceVariant,
                             onTap: () => onSeleccionar(index),
                           ),
                       ],

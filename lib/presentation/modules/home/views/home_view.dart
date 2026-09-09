@@ -6,25 +6,36 @@ import 'package:spec_kit_flutter_lab/presentation/modules/home/controllers/home_
 import 'package:spec_kit_flutter_lab/presentation/modules/navigation/widgets/app_bottom_nav_bar_widget.dart';
 
 import '../widgets/home_background_widget.dart';
+import '../widgets/home_banner_widget.dart';
+import '../widgets/home_category_grid_widget.dart';
+import '../widgets/home_greeting_widget.dart';
+import '../widgets/home_highlights_widget.dart';
 import '../widgets/home_list_item_widget.dart';
+import '../widgets/home_quick_actions_widget.dart';
+import '../widgets/home_section_title_widget.dart';
+import '../widgets/home_stats_row_widget.dart';
+import '../widgets/home_stories_widget.dart';
 
 /// Vista principal del módulo home — ver PRESENTATION_ARCHITECTURE.md §8.
-/// La lista larga es solo para ver el bottom nav (`AppNavigationShell`) y el
+/// Header (saludo + accesos rápidos) y lista comparten un único
+/// `CustomScrollView` — un `Stack` no ordena widgets uno debajo del otro
+/// como una columna, así que un header "antes de la lista" necesita un
+/// scroll real, no widgets sueltos apilados encima. El bottom nav y el
 /// header ambos de vidrio (`GlassContainer`, reutilizado sin cambios) con
 /// contenido real desplazándose detrás — se reemplaza por contenido real
 /// cuando exista.
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
 
-  static const _cantidadDemo = 30;
+  static const _cantidadDemo = 13;
 
   @override
   Widget build(BuildContext context) {
     context.watch<HomeController>();
 
-    // Alto real del AppBar (barra de estado + toolbar) — el body arranca
-    // debajo (ver padding del ListView) para no tapar el primer ítem, pero
-    // sigue extendiéndose detrás gracias a `extendBodyBehindAppBar`.
+    // Alto real del AppBar (barra de estado + toolbar) — el contenido
+    // arranca debajo (ver padding del header), pero sigue extendiéndose
+    // detrás gracias a `extendBodyBehindAppBar`.
     final alturaAppBar = MediaQuery.of(context).padding.top + kToolbarHeight;
 
     return Scaffold(
@@ -59,24 +70,69 @@ class HomeView extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          // Fondo fijo (no scrollea con la lista) — le da variación real de
-          // color al vidrio de arriba/abajo para que su transparencia se
-          // note (ver doc de HomeBackground).
+          // Fondo fijo (no scrollea con el contenido) — le da variación
+          // real de color al vidrio de arriba/abajo para que su
+          // transparencia se note (ver doc de HomeBackground).
           const Positioned.fill(child: HomeBackground()),
-          ListView.builder(
-            // Top = alto del AppBar (el primer ítem arranca justo debajo,
-            // no tapado). Bottom = alto de la cápsula flotante del bottom
-            // nav (ver AppBottomNavBar.altura) — sin esto, el último ítem
-            // quedaría parcialmente tapado por ella en vez de poder
-            // scrollear por completo a la vista.
-            padding: EdgeInsets.fromLTRB(
-              0,
-              alturaAppBar + 12,
-              0,
-              12 + AppBottomNavBar.altura,
-            ),
-            itemCount: _cantidadDemo,
-            itemBuilder: (context, index) => HomeListItem(index: index),
+          CustomScrollView(
+            slivers: [
+              // Header: saludo + accesos rápidos, ambos widgets propios de
+              // Home (§4 PRESENTATION_ARCHITECTURE.md — un módulo agrega
+              // Widgets nuevos en su propia carpeta `widgets/`, no inline
+              // en la Page). Va en un único `SliverToBoxAdapter` porque
+              // scrollea como bloque junto con la lista de abajo.
+              SliverPadding(
+                padding: EdgeInsets.fromLTRB(16, alturaAppBar + 12, 16, 0),
+                sliver: SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      HomeGreeting(),
+                      SizedBox(height: 20),
+                      HomeQuickActions(),
+                      SizedBox(height: 24),
+                      HomeSectionTitle('Historias'),
+                      SizedBox(height: 12),
+                      HomeStories(),
+                      SizedBox(height: 24),
+                      HomeBanner(),
+                      SizedBox(height: 24),
+                      HomeSectionTitle('Tu actividad'),
+                      SizedBox(height: 12),
+                      HomeStatsRow(),
+                      SizedBox(height: 24),
+                      HomeSectionTitle('Categorías'),
+                      SizedBox(height: 12),
+                      HomeCategoryGrid(),
+                      SizedBox(height: 24),
+                      HomeSectionTitle('Destacados'),
+                      SizedBox(height: 12),
+                      // Tarjetas sólidas (no vidrio) a propósito — ver doc
+                      // de HomeHighlights: le dan al bottom nav otro tipo
+                      // de contenido real por detrás, no solo tarjetas de
+                      // vidrio repetidas.
+                      HomeHighlights(),
+                      SizedBox(height: 24),
+                      HomeSectionTitle('Todo'),
+                    ],
+                  ),
+                ),
+              ),
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                sliver: SliverList.builder(
+                  itemCount: _cantidadDemo,
+                  itemBuilder: (context, index) => HomeListItem(index: index),
+                ),
+              ),
+              // Espacio final = alto de la cápsula flotante del bottom nav
+              // (ver AppBottomNavBar.altura) — sin esto, el último ítem
+              // quedaría parcialmente tapado por ella en vez de poder
+              // scrollear por completo a la vista.
+              SliverPadding(
+                padding: EdgeInsets.only(bottom: AppBottomNavBar.altura),
+              ),
+            ],
           ),
         ],
       ),

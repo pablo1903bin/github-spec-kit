@@ -39,10 +39,19 @@ class NavBarItem extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            AnimatedDefaultTextStyle(
+            // BUG real: `Icon` no lee color de `DefaultTextStyle` (eso solo
+            // afecta a `Text`) — envolverlo en `AnimatedDefaultTextStyle`
+            // no hacía nada, el ícono seguía cayendo al color del
+            // `IconTheme` global (blanco). `Icon.color` es el único
+            // parámetro que realmente lo pinta — acá con
+            // `TweenAnimationBuilder` para conservar la transición animada.
+            TweenAnimationBuilder<Color?>(
+              tween: ColorTween(end: colorActual),
               duration: _duracion,
-              style: TextStyle(color: colorActual),
-              child: Icon(selected ? (selectedIcon ?? icon) : icon),
+              builder: (context, color, _) => Icon(
+                selected ? (selectedIcon ?? icon) : icon,
+                color: color,
+              ),
             ),
             const SizedBox(height: 2),
             AnimatedDefaultTextStyle(

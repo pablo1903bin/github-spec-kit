@@ -104,11 +104,22 @@ class AppBottomNavBar extends StatelessWidget {
           blurSigma: 3,
           borderColor: AppColors.glassBorder(0.30),
           shadowOpacity: 0.02,
-          // Rama sin shader (ver nota de arriba): esto sigue siendo un zoom
-          // centrado parejo vía `ImageFilter.matrix`, no el bisel con
-          // continuidad en el borde que describía el comentario anterior —
-          // ese mecanismo es el del shader, que no está activo.
-          magnification: 1.18,
+          // En 1.18 (el "lente" fuerte de antes) esta barra mostraba
+          // colores de tarjetas que ya habían quedado arriba en el scroll
+          // (ej. "Destacados") en vez de lo que estaba literalmente detrás
+          // de ella — ver `ImageFilter.matrix` compuesto sobre el
+          // `BackdropFilter` en `GlassContainer._buildFilter`, que dentro
+          // de un `CustomScrollView` puede terminar muestreando una región
+          // del backdrop que no es la que está debajo del widget en
+          // pantalla. Este valor (1.03) es deliberadamente chico — el
+          // error de esa muestra escala con cuánto te alejás de 1.0, así
+          // que acá debería ser imperceptible, pero es la MISMA causa que
+          // el bug anterior, solo más atenuada. Si vuelve a filtrarse
+          // color de otra parte del scroll, bajar más (o volver a 1.0) es
+          // el único ajuste real — no hay forma de tener el efecto "lente"
+          // sin este riesgo mientras el shader premium siga sin activarse
+          // (ver nota de la clase, más arriba).
+          magnification: 1.01,
           child: SizedBox(
             height: _alturaCapsula,
             child: LayoutBuilder(

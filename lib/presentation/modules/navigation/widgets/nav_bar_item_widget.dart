@@ -29,6 +29,18 @@ class NavBarItem extends StatelessWidget {
 
   static const _duracion = Duration(milliseconds: 220);
 
+  /// Sombra fija (siempre presente, sin importar `selected`) para que el
+  /// ícono/etiqueta se distingan sin importar qué color de fondo esté
+  /// pasando detrás de la barra en ese momento del scroll (ver doc de
+  /// [AppBottomNavBar] — la barra es casi transparente, así que el fondo
+  /// real puede ser cualquier color de `HomeHighlights`/`HomeBanner`/etc.).
+  /// Un texto/ícono verde sobre una tarjeta verde se pierde por más
+  /// contraste que tenga su propio color — el borde oscuro es lo único que
+  /// lo separa del fondo sin importar de qué color sea.
+  static const _sombra = [
+    Shadow(color: Colors.black45, blurRadius: 4),
+  ];
+
   @override
   Widget build(BuildContext context) {
     final colorActual = selected ? color : unselectedColor;
@@ -51,6 +63,7 @@ class NavBarItem extends StatelessWidget {
               builder: (context, color, _) => Icon(
                 selected ? (selectedIcon ?? icon) : icon,
                 color: color,
+                shadows: _sombra,
               ),
             ),
             const SizedBox(height: 2),
@@ -60,6 +73,7 @@ class NavBarItem extends StatelessWidget {
                 color: colorActual,
                 fontSize: 11,
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                shadows: _sombra,
               ),
               child: Text(label),
             ),

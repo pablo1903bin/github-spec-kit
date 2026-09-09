@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:spec_kit_flutter_lab/core/theme/app_colors.dart';
 import 'package:spec_kit_flutter_lab/presentation/global/widgets/design/glass_container.dart';
+import 'package:spec_kit_flutter_lab/presentation/global/widgets/design/glass_highlight_overlay_widget.dart';
 
 import 'app_tab.dart';
 import 'nav_bar_highlight_widget.dart';
@@ -13,6 +14,20 @@ import 'nav_bar_item_widget.dart';
 /// barra debe usar `Scaffold(extendBody: true)` (ver `AppNavigationShell`):
 /// sin eso no hay contenido real detrás para desenfocar, y el blur solo
 /// difuminaría el color de fondo del Scaffold.
+///
+/// **Nota de estado real (no lo que decían los comentarios viejos acá):**
+/// [GlassContainer] tiene código para un fragment shader premium
+/// (`shaders/glass_container.frag`) que nunca se activó — el asset no está
+/// declarado en `pubspec.yaml`, así que `FragmentProgram.fromAsset` siempre
+/// falla y el widget corre 100% del tiempo por su rama de respaldo:
+/// `ImageFilter.blur` + un zoom centrado parejo (`ImageFilter.matrix`), sin
+/// ninguna refracción real de bisel. `blurSigma`/`magnification` acá
+/// controlan ESE mecanismo simple, no el shader. [GlassHighlightOverlay]
+/// sigue siendo el único brillo real que se ve (el del shader nunca corrió).
+/// Queda pendiente decidir si se termina de wirear el shader (declararlo en
+/// `pubspec.yaml` y probarlo en un dispositivo real) o se retira el código
+/// muerto — por ahora esta barra es un `BackdropFilter(blur)` simple, el
+/// "vidrio falso" que el shader buscaba reemplazar.
 ///
 /// Mismo mecanismo central que el original: una cápsula que se DESLIZA
 /// (`AnimatedPositioned`) entre pestañas en vez de resaltarlas una por una
@@ -68,11 +83,32 @@ class AppBottomNavBar extends StatelessWidget {
         ),
         child: GlassContainer(
           borderRadius: _alturaCapsula / 2,
-          fillColor: AppColors.surface,
-          fillOpacity: 0.55,
-          blurSigma: 20,
-          borderColor: AppColors.glassBorder(),
-          shadowOpacity: 0.35,
+          // CORRECCIÓN: el shader de `shaders/glass_container.frag` nunca
+          // llegó a declararse en `pubspec.yaml` — sin eso,
+          // `FragmentProgram.fromAsset` siempre falla y el widget cae al
+          // mecanismo de respaldo (`ImageFilter.blur` + zoom vía
+          // `ImageFilter.matrix`, ver `GlassContainer._buildFilter`). Todo
+          // lo que describían los comentarios viejos acá sobre "el shader
+          // mezcla esto o aquello" era código muerto que nunca corrió — la
+          // opacidad real siempre vino de `blurSigma` (ver abajo), nunca del
+          // shader. Pendiente: decidir si se declara el shader en pubspec y
+          // se prueba de verdad, o se lo retira (§2, no dejar código muerto).
+          fillColor: AppColors.white,
+          fillOpacity: 0,
+          // Bajado de 10 a 3: con fillOpacity/shadowOpacity ya casi en cero,
+          // el blur era lo único que seguía "aplanando" el fondo en una
+          // mancha pareja y pálida — sobre todo notorio ahora que Home tiene
+          // fondo claro (poco contraste de por sí). Un blur bajo deja
+          // reconocerse las formas/colores de atrás, que es lo que de
+          // verdad se lee como "transparente" en vez de "blur homogéneo".
+          blurSigma: 3,
+          borderColor: AppColors.glassBorder(0.30),
+          shadowOpacity: 0.02,
+          // Rama sin shader (ver nota de arriba): esto sigue siendo un zoom
+          // centrado parejo vía `ImageFilter.matrix`, no el bisel con
+          // continuidad en el borde que describía el comentario anterior —
+          // ese mecanismo es el del shader, que no está activo.
+          magnification: 1.18,
           child: SizedBox(
             height: _alturaCapsula,
             child: LayoutBuilder(
@@ -83,6 +119,13 @@ class AppBottomNavBar extends StatelessWidget {
 
                 return Stack(
                   children: [
+                    // El shader de GlassContainer ya aporta su propio
+                    // barrido de brillo direccional — esto solo suma un
+                    // toque extra de reflejo en la cara interna del vidrio,
+                    // no duplica el efecto.
+                    const Positioned.fill(
+                      child: GlassHighlightOverlay(opacity: 0.16),
+                    ),
                     if (currentIndex >= 0 && currentIndex < tabs.length)
                       AnimatedPositioned(
                         duration: const Duration(milliseconds: 240),

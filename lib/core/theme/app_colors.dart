@@ -21,6 +21,20 @@ class AppColors {
   static const onSurface = Color(0xFFFFFFFF);
   static const onSurfaceVariant = Color(0xFFB3B3B3);
 
+  // ── Excepción clara (pantallas que no siguen el tema oscuro) ────────────
+  //
+  // Un grupo aparte, no una mezcla del bloque "oscuro" de arriba — para que
+  // una pantalla clara (ej. `HomeView`) tenga su propio par fondo/superficie/
+  // texto consistente entre sí, en vez de combinar sueltos un token oscuro
+  // con uno claro y terminar con contraste roto. No reemplazan a
+  // [background]/[surface]/[onSurface], que siguen siendo el estándar del
+  // resto de la app.
+
+  static const lightBackground = Color(0xFFF5F5F5);
+  static const lightSurface = Colors.white; // tarjetas sobre lightBackground
+  static const onLightSurface = Color(0xFF1A1A1A); // texto principal
+  static const onLightSurfaceVariant = Color(0xFF5F5F5F); // subtítulos, hints
+
   // ── Texto (propósito explícito) ─────────────────────────────────────────
   static const textPrimary = onSurface; // títulos y contenido principal
   static const textSecondary = onSurfaceVariant; // subtítulos, hints, captions
